@@ -1,0 +1,34 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Orbit logo">
+  <defs>
+    <linearGradient id="orbGrad" x1="96" y1="96" x2="416" y2="416" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6E7BFF"/>
+      <stop offset="0.55" stop-color="#5B6EF5"/>
+      <stop offset="1" stop-color="#7C5CFC"/>
+    </linearGradient>
+    <linearGradient id="pinGrad" x1="200" y1="176" x2="312" y2="312" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E9ECFF"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#3F51D8" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <!-- rounded app-icon tile -->
+  <rect x="16" y="16" width="480" height="480" rx="116" fill="url(#orbGrad)"/>
+
+  <!-- orbital ring (tilted ellipse) -->
+  <g filter="url(#soft)">
+    <ellipse cx="256" cy="256" rx="168" ry="104" transform="rotate(-28 256 256)"
+             fill="none" stroke="#FFFFFF" stroke-opacity="0.85" stroke-width="14"/>
+  </g>
+
+  <!-- orbiting people dots -->
+  <circle cx="112" cy="196" r="20" fill="#FFFFFF"/>
+  <circle cx="400" cy="316" r="16" fill="#C9D0FF"/>
+
+  <!-- central location pin (the "you are here") -->
+  <path d="M256 168c-42 0-76 33-76 74 0 52 60 104 72 114a6 6 0 0 0 8 0c12-10 72-62 72-114 0-41-34-74-76-74z"
+        fill="url(#pinGrad)"/>
+  <circle cx="256" cy="242" r="30" fill="#5B6EF5"/>
+</svg>

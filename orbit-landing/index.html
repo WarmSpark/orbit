@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit — Find your people, right now</title>
+<meta name="description" content="Orbit connects you with people who want to hang out right now, near you in the NCR. Drop a pin, gather your crew, and go.">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" href="assets/orbit-logo-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="assets/orbit-logo-180.png">
+<meta name="theme-color" content="#5B6EF5">
+<meta property="og:title" content="Orbit — Find your people, right now">
+<meta property="og:description" content="Spontaneous hangouts, near you. Drop a pin, gather your crew, and go.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/orbit-logo-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="assets/orbit-logo-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#5B6EF5; --primary-dark:#3F51D8; --violet:#7C5CFC;
+    --ink:#1B1D28; --ink-soft:#5B607A; --line:#E9EBF3;
+    --bg:#F6F7FB; --surface:#FFFFFF;
+    --canteen:#FF8A3D; --study:#2DA4FF; --gaming:#22C55E; --sports:#FF5A7A;
+    --radius:20px; --shadow:0 20px 50px -20px rgba(63,81,216,.35);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Poppins',sans-serif; line-height:1.12; letter-spacing:-.02em; margin:0}
+  a{color:inherit; text-decoration:none}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 24px}
+  .grad-text{background:linear-gradient(120deg,var(--primary),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent}
+
+  /* NAV */
+  header{position:sticky; top:0; z-index:50; backdrop-filter:blur(12px); background:rgba(246,247,251,.8); border-bottom:1px solid var(--line)}
+  .nav{display:flex; align-items:center; justify-content:space-between; height:72px}
+  .brand{display:flex; align-items:center; gap:12px; font-family:'Poppins'; font-weight:700; font-size:22px}
+  .brand img{width:40px; height:40px; border-radius:12px; box-shadow:var(--shadow)}
+  .nav-links{display:flex; gap:32px; align-items:center; font-weight:500; color:var(--ink-soft)}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex; align-items:center; gap:10px; font-family:'Poppins'; font-weight:600; font-size:16px;
+    padding:13px 24px; border-radius:14px; cursor:pointer; border:none; transition:transform .15s ease, box-shadow .2s ease}
+  .btn-primary{background:linear-gradient(120deg,var(--primary),var(--violet)); color:#fff; box-shadow:var(--shadow)}
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 26px 60px -20px rgba(63,81,216,.55)}
+  .btn-ghost{background:var(--surface); color:var(--ink); border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:#c9cffb}
+  .nav .btn{padding:10px 20px; font-size:15px}
+  @media(max-width:760px){.nav-links{display:none}}
+
+  /* HERO */
+  .hero{position:relative; overflow:hidden; padding:80px 0 40px}
+  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:48px; align-items:center}
+  .pill{display:inline-flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--line);
+    color:var(--ink-soft); font-weight:600; font-size:13px; padding:7px 14px; border-radius:100px; margin-bottom:24px}
+  .pill .dot{width:8px; height:8px; border-radius:50%; background:var(--gaming); box-shadow:0 0 0 4px rgba(34,197,94,.18)}
+  .hero h1{font-size:clamp(38px,5.4vw,62px); font-weight:800}
+  .hero p.lead{font-size:19px; color:var(--ink-soft); margin:22px 0 32px; max-width:520px}
+  .cta-row{display:flex; gap:14px; flex-wrap:wrap; align-items:center}
+  .cta-note{font-size:13px; color:var(--ink-soft); margin-top:16px}
+  .trust{display:flex; gap:28px; margin-top:40px; flex-wrap:wrap}
+  .trust .stat b{font-family:'Poppins'; font-size:26px; display:block}
+  .trust .stat span{font-size:13px; color:var(--ink-soft)}
+
+  /* blobs */
+  .blob{position:absolute; border-radius:50%; filter:blur(70px); opacity:.5; z-index:-1}
+  .blob.a{width:420px; height:420px; background:#c9cffb; top:-120px; right:-80px}
+  .blob.b{width:360px; height:360px; background:#e6dcff; bottom:-140px; left:-100px}
+
+  /* PHONE MOCKUP */
+  .phone-wrap{display:flex; justify-content:center; position:relative}
+  .phone{width:290px; height:600px; background:#0f1120; border-radius:44px; padding:12px;
+    box-shadow:0 40px 90px -30px rgba(31,34,55,.6), inset 0 0 0 2px #2a2d47; position:relative}
+  .phone::before{content:""; position:absolute; top:20px; left:50%; transform:translateX(-50%);
+    width:120px; height:26px; background:#0f1120; border-radius:0 0 18px 18px; z-index:3}
+  .screen{width:100%; height:100%; border-radius:34px; overflow:hidden; background:var(--bg); position:relative}
+  .map{position:absolute; inset:0; background:
+      radial-gradient(circle at 30% 25%, #eaf2ff, transparent 40%),
+      radial-gradient(circle at 75% 70%, #f0ebff, transparent 45%),
+      linear-gradient(#eef1f8,#e7ebf5)}
+  .map::after{content:""; position:absolute; inset:0; opacity:.5;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:38px 38px}
+  .mpin{position:absolute; width:34px; height:34px; border-radius:50% 50% 50% 4px; transform:rotate(45deg);
+    box-shadow:0 8px 18px -6px rgba(0,0,0,.35); display:grid; place-items:center}
+  .mpin i{transform:rotate(-45deg); font-style:normal; font-size:16px}
+  .mpin.p1{background:var(--primary); top:38%; left:30%}
+  .mpin.p2{background:var(--canteen); top:55%; left:58%}
+  .mpin.p3{background:var(--gaming); top:30%; left:64%}
+  .mpin.me{background:#fff; border:3px solid var(--primary); top:47%; left:46%; width:22px; height:22px; border-radius:50%; transform:none; animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(91,110,245,.5)}70%{box-shadow:0 0 0 16px rgba(91,110,245,0)}100%{box-shadow:0 0 0 0 rgba(91,110,245,0)}}
+  .sheet{position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:24px 24px 34px 34px; padding:18px 18px 26px; box-shadow:0 -10px 30px -12px rgba(31,34,55,.2)}
+  .sheet .grab{width:40px; height:5px; border-radius:3px; background:var(--line); margin:0 auto 14px}
+  .card{display:flex; gap:12px; align-items:center; padding:12px; border:1px solid var(--line); border-radius:16px; margin-bottom:10px}
+  .card .av{width:44px; height:44px; border-radius:12px; display:grid; place-items:center; color:#fff; font-size:20px; flex:none}
+  .card b{font-family:'Poppins'; font-size:14px}
+  .card small{color:var(--ink-soft); font-size:12px}
+  .card .go{margin-left:auto; font-size:12px; font-weight:700; color:var(--primary); font-family:'Poppins'}
+  .topbar{position:absolute; top:56px; left:16px; right:16px; background:#fff; border-radius:14px; padding:10px 14px; display:flex; align-items:center; gap:10px; box-shadow:0 6px 18px -8px rgba(31,34,55,.25); font-size:13px; color:var(--ink-soft); z-index:2}
+
+  /* SECTION */
+  section{padding:88px 0}
+  .sec-head{text-align:center; max-width:640px; margin:0 auto 56px}
+  .sec-head .kicker{font-family:'Poppins'; font-weight:700; color:var(--primary); font-size:14px; letter-spacing:.04em; text-transform:uppercase}
+  .sec-head h2{font-size:clamp(28px,4vw,42px); margin:12px 0}
+  .sec-head p{color:var(--ink-soft); font-size:18px}
+
+  .features{display:grid; grid-template-columns:repeat(3,1fr); gap:22px}
+  .feat{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:30px; transition:transform .2s ease, box-shadow .2s ease}
+  .feat:hover{transform:translateY(-4px); box-shadow:var(--shadow)}
+  .feat .ic{width:52px; height:52px; border-radius:15px; display:grid; place-items:center; font-size:24px; margin-bottom:18px; color:#fff}
+  .feat h3{font-size:19px; margin-bottom:8px}
+  .feat p{color:var(--ink-soft); font-size:15px; margin:0}
+  @media(max-width:860px){.features{grid-template-columns:1fr}}
+
+  /* STEPS */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; counter-reset:step}
+  .step{position:relative; background:linear-gradient(180deg,#fff,#fbfbff); border:1px solid var(--line); border-radius:var(--radius); padding:32px 26px}
+  .step::before{counter-increment:step; content:counter(step); font-family:'Poppins'; font-weight:800; font-size:22px;
+    width:46px; height:46px; border-radius:14px; display:grid; place-items:center; color:#fff;
+    background:linear-gradient(120deg,var(--primary),var(--violet)); margin-bottom:18px}
+  .step h3{font-size:19px; margin-bottom:8px}
+  .step p{color:var(--ink-soft); font-size:15px; margin:0}
+  @media(max-width:860px){.steps{grid-template-columns:1fr}}
+
+  /* PRIVACY strip */
+  .privacy{background:linear-gradient(120deg,#1B1D28,#2a2d52); color:#fff; border-radius:28px; padding:52px; display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center}
+  .privacy h2{font-size:32px; margin-bottom:14px}
+  .privacy p{color:#c7cbe6; font-size:16px}
+  .privacy ul{list-style:none; padding:0; margin:0; display:grid; gap:14px}
+  .privacy li{display:flex; gap:12px; align-items:flex-start; font-size:15px}
+  .privacy li .chk{flex:none; width:24px; height:24px; border-radius:8px; background:rgba(91,110,245,.25); color:#a9b4ff; display:grid; place-items:center; font-weight:700; font-size:13px}
+  @media(max-width:860px){.privacy{grid-template-columns:1fr; padding:36px}}
+
+  /* DOWNLOAD */
+  .download{text-align:center}
+  .dl-card{background:linear-gradient(120deg,var(--primary),var(--violet)); color:#fff; border-radius:32px; padding:64px 40px; box-shadow:var(--shadow); position:relative; overflow:hidden}
+  .dl-card h2{font-size:clamp(30px,4vw,44px); color:#fff}
+  .dl-card p{font-size:18px; color:#e6e9ff; max-width:520px; margin:16px auto 32px}
+  .dl-card .btn-white{background:#fff; color:var(--primary-dark)}
+  .dl-card .btn-white:hover{transform:translateY(-2px)}
+  .dl-meta{margin-top:20px; font-size:13px; color:#dfe3ff}
+  .dl-ring{position:absolute; width:300px; height:300px; border:2px solid rgba(255,255,255,.18); border-radius:50%; top:-120px; right:-80px}
+  .dl-ring.two{width:200px; height:200px; bottom:-90px; left:-40px; top:auto; right:auto}
+
+  /* FOOTER */
+  footer{padding:48px 0; border-top:1px solid var(--line); color:var(--ink-soft); font-size:14px}
+  .foot{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px}
+  .foot .brand{font-size:18px; color:var(--ink)}
+  .foot img{width:32px;height:32px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top"><img src="assets/orbit-logo-192.png" alt="Orbit"><span>Orbit</span></a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#privacy">Privacy</a>
+    </nav>
+    <a class="btn btn-primary" href="#download">Get the app</a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="blob a"></div><div class="blob b"></div>
+    <div class="wrap hero-grid">
+      <div>
+        <span class="pill"><span class="dot"></span>Live now across Delhi NCR</span>
+        <h1>Find your people,<br><span class="grad-text">right now.</span></h1>
+        <p class="lead">Orbit connects you with people nearby who want to hang out <em>today</em>. Drop a pin, gather your crew, chat in real time, and go. No feeds, no followers — just plans that actually happen.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#download">⬇ Download for Android</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <p class="cta-note">Free • Android APK • Sign in with Google</p>
+        <div class="trust">
+          <div class="stat"><b class="grad-text">24h</b><span>Hangouts that expire so plans stay fresh</span></div>
+          <div class="stat"><b class="grad-text">~110m</b><span>Location fuzzing to protect your privacy</span></div>
+          <div class="stat"><b class="grad-text">0</b><span>Ads, feeds, and follower counts</span></div>
+        </div>
+      </div>
+
+      <!-- phone -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="map">
+            <div class="mpin p1"><i>☕</i></div>
+            <div class="mpin p2"><i>🎮</i></div>
+            <div class="mpin p3"><i>📚</i></div>
+            <div class="mpin me"></div>
+          </div>
+          <div class="topbar">📍 Connaught Place · 6 hangouts near you</div>
+          <div class="sheet">
+            <div class="grab"></div>
+            <div class="card">
+              <div class="av" style="background:var(--canteen)">☕</div>
+              <div><b>Coffee at CP</b><br><small>3 going · 200m away · 5:30 PM</small></div>
+              <span class="go">Join →</span>
+            </div>
+            <div class="card">
+              <div class="av" style="background:var(--gaming)">🎮</div>
+              <div><b>FIFA night</b><br><small>2 going · 450m away · 8:00 PM</small></div>
+              <span class="go">Join →</span>
+            </div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">Why Orbit</div>
+        <h2>Built for the spur of the moment</h2>
+        <p>Everything you need to turn "I'm bored" into "I'm out with people" — in a couple of taps.</p>
+      </div>
+      <div class="features">
+        <div class="feat">
+          <div class="ic" style="background:var(--primary)">🗺️</div>
+          <h3>A live map of right now</h3>
+          <p>See real hangouts happening around you on an open map. Coffee, gaming, study, sports — filter by vibe and jump in.</p>
+        </div>
+        <div class="feat">
+          <div class="ic" style="background:var(--canteen)">📌</div>
+          <h3>Drop a pin, host a plan</h3>
+          <p>Start a hangout in seconds, set how many can join, and approve who's coming. You're always in control of your crew.</p>
+        </div>
+        <div class="feat">
+          <div class="ic" style="background:var(--gaming)">💬</div>
+          <h3>Real-time chat rooms</h3>
+          <p>Every hangout gets a live room. See who's typing, reply to any message, and sort out the details before you meet.</p>
+        </div>
+        <div class="feat">
+          <div class="ic" style="background:var(--study)">🏙️</div>
+          <h3>The NCR Town Hall</h3>
+          <p>One shared room for the whole region. Ask a question, find a last-minute crew, or just see what's happening tonight.</p>
+        </div>
+        <div class="feat">
+          <div class="ic" style="background:var(--sports)">🔒</div>
+          <h3>Privacy by design</h3>
+          <p>Your exact location is fuzzed, your email stays hidden, and hangouts vanish after 24 hours. Nothing lingers.</p>
+        </div>
+        <div class="feat">
+          <div class="ic" style="background:var(--violet)">⚡</div>
+          <h3>No feed, no pressure</h3>
+          <p>No likes, no followers, no doomscroll. Orbit exists to get you off the app and into the room with real people.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section id="how" style="background:linear-gradient(180deg,#fff,var(--bg))">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">How it works</div>
+        <h2>Three taps to a hangout</h2>
+        <p>No profiles to polish, no endless setup. Sign in and you're on the map.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <h3>Open the map</h3>
+          <p>Sign in with Google and see live hangouts pinned around you across the NCR.</p>
+        </div>
+        <div class="step">
+          <h3>Join or host</h3>
+          <p>Tap a pin to request a spot, or drop your own and pick who gets to come along.</p>
+        </div>
+        <div class="step">
+          <h3>Chat & meet up</h3>
+          <p>Lock in the details in the live room, then head out and actually hang.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY -->
+  <section id="privacy">
+    <div class="wrap">
+      <div class="privacy">
+        <div>
+          <h2>Your privacy isn't the product.</h2>
+          <p>Orbit is designed so you can meet people without giving up your data. We collect the minimum, blur the rest, and let plans expire on their own.</p>
+        </div>
+        <ul>
+          <li><span class="chk">✓</span><span><b>Fuzzed location.</b> Pins are offset by ~110m so no one can find your doorstep.</span></li>
+          <li><span class="chk">✓</span><span><b>Hidden identity.</b> Your email is never shown to other users — only the host sees who joined.</span></li>
+          <li><span class="chk">✓</span><span><b>Auto-expiry.</b> Every hangout and its chat disappears 24 hours after it's created.</span></li>
+          <li><span class="chk">✓</span><span><b>No tracking feed.</b> No ads, no follower graph, no behavioural profiling.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section id="download" class="download">
+    <div class="wrap">
+      <div class="dl-card">
+        <div class="dl-ring"></div><div class="dl-ring two"></div>
+        <h2>Ready to get out there?</h2>
+        <p>Download Orbit for Android and find your people tonight. Installs in seconds — just sign in with Google and you're on the map.</p>
+        <a class="btn btn-white" href="orbit.apk" download>⬇ Download the APK</a>
+        <div class="dl-meta">Android 6.0+ · You may need to allow "install from unknown sources"</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="brand" href="#top"><img src="assets/orbit-logo-192.png" alt="Orbit"><span>Orbit</span></a>
+    <div>Made for the NCR · Spontaneous hangouts, privacy-first</div>
+    <div>© 2026 Orbit</div>
+  </div>
+</footer>
+
+</body>
+</html>

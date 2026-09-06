@@ -1,0 +1,131 @@
+# ─────────────────────────────────────────────────────────────
+# Secrets & credentials — NEVER commit any of these
+# ─────────────────────────────────────────────────────────────
+.env
+.env.*
+*.env
+!.env.example
+release.env
+key.properties
+android/key.properties
+*.jks
+*.keystore
+*.p12
+*.pem
+*.pkcs12
+*.der
+orbit-release.jks
+google-services.json
+GoogleService-Info.plist
+*.mobileprovision
+secrets.*
+*credentials*.json
+service-account*.json
+
+# Internal review / audit docs (reveal attack surface & old secrets)
+BACKEND_MASTER_REVIEW.md
+SECURITY_FIXES.md
+
+# ─────────────────────────────────────────────────────────────
+# Go backend
+# ─────────────────────────────────────────────────────────────
+server
+hangout-backend/server
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+go.work
+go.work.sum
+
+# ─────────────────────────────────────────────────────────────
+# Flutter / Dart
+# ─────────────────────────────────────────────────────────────
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+**/build/
+.fvm/
+coverage/
+*.lock.bak
+doc/api/
+
+# ─────────────────────────────────────────────────────────────
+# Android
+# ─────────────────────────────────────────────────────────────
+**/android/**/gradle-wrapper.jar
+**/android/.gradle/
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/key.properties
+.gradle/
+local.properties
+
+# ─────────────────────────────────────────────────────────────
+# iOS / macOS
+# ─────────────────────────────────────────────────────────────
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+flutter_native_integration.env
+
+# ─────────────────────────────────────────────────────────────
+# IDE / editor / OS
+# ─────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ─────────────────────────────────────────────────────────────
+# Logs / temp
+# ─────────────────────────────────────────────────────────────
+*.log
+*.tmp
+tmp/
+temp/

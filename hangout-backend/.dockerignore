@@ -1,0 +1,11 @@
+# Keep the image small and the build fast — exclude everything the binary
+# doesn't need. The prebuilt ./server binary in the repo is especially important
+# to exclude (it's ~10 MB and would bloat the build context).
+.git
+.gitignore
+*.md
+server
+test_server.sh
+Dockerfile
+.dockerignore
+heroku.yml
