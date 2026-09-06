@@ -29,8 +29,7 @@ SECURITY_FIXES.md
 # ─────────────────────────────────────────────────────────────
 # Go backend
 # ─────────────────────────────────────────────────────────────
-server
-hangout-backend/server
+/hangout-backend/server
 *.exe
 *.exe~
 *.dll
