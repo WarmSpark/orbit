@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"hangout-backend/internal/database"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -35,12 +36,52 @@ type AuthResponse struct {
 	User      *database.User `json:"user,omitempty"`
 }
 
+type DeleteAccountRequest struct {
+	Confirm string `json:"confirm"`
+}
+
 type AuthHandler struct {
-	Store *database.UserStore
+	Store   *database.UserStore
+	ChatHub *ChatHub
 }
 
 func NewAuthHandler(store *database.UserStore) *AuthHandler {
 	return &AuthHandler{Store: store}
+}
+
+func (h *AuthHandler) SetChatHub(hub *ChatHub) { h.ChatHub = hub }
+
+func (h *AuthHandler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if !IsProd() && strings.TrimSpace(os.Getenv("ORBIT_DELETE_KEY")) != "" {
+		if strings.TrimSpace(r.Header.Get("X-Delete-Key")) != strings.TrimSpace(os.Getenv("ORBIT_DELETE_KEY")) {
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(AuthResponse{Status: "error", Message: "Forbidden"})
+			return
+		}
+	}
+	var req DeleteAccountRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || strings.ToLower(strings.TrimSpace(req.Confirm)) != "delete" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(AuthResponse{Status: "error", Message: "Type delete to confirm"})
+		return
+	}
+
+	userEmail := GetUserEmail(r.Context())
+	roomIDs, err := h.Store.DeleteAccount(userEmail)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(AuthResponse{Status: "error", Message: "Could not delete account"})
+		return
+	}
+
+	if h.ChatHub != nil {
+		h.ChatHub.CloseRooms(roomIDs)
+		h.ChatHub.DisconnectUser(townhallRoomID, userEmail, "account_deleted")
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(AuthResponse{Status: "ok", Message: "Account deleted"})
 }
 
 func (h *AuthHandler) GoogleLogin(w http.ResponseWriter, r *http.Request) {
@@ -218,7 +259,7 @@ func (h *AuthHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.Store.UpdateProfile(userEmail, req.Username, req.Name, gender, req.Bio, req.Avatar); err != nil {
+	if err := h.Store.UpdateProfile(userEmail, req.Username, req.Name, gender, req.Bio, sanitizeAvatar(req.Avatar)); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(AuthResponse{Status: "error", Message: err.Error()})
 		return

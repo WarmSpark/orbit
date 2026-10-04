@@ -50,6 +50,13 @@ class ApiClient {
     return _decode(res);
   }
 
+  Future<dynamic> delete(String path, [Map<String, dynamic>? body]) async {
+    final res = await http
+        .delete(_uri(path), headers: _headers(), body: jsonEncode(body ?? {}))
+        .timeout(const Duration(seconds: 20));
+    return _decode(res);
+  }
+
   dynamic _decode(http.Response res) {
     dynamic parsed;
     if (res.body.isNotEmpty) {

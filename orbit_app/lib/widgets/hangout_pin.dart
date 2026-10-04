@@ -21,7 +21,7 @@ class HangoutPin extends StatelessWidget {
   Widget build(BuildContext context) {
     final cat = categoryFor(hangout.category);
     final dim = hangout.isFull && !hangout.isHost;
-    final accent = dim ? OrbitColors.inkSoft : cat.color;
+    final accent = dim ? context.cInkSoft : cat.color;
 
     return GestureDetector(
       onTap: onTap,
@@ -36,7 +36,7 @@ class HangoutPin extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(6, 5, 12, 5),
                 decoration: BoxDecoration(
-                  color: OrbitColors.surface,
+                  color: context.cSurface,
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(
                     color: selected ? accent : accent.withValues(alpha: 0.35),
@@ -69,10 +69,10 @@ class HangoutPin extends StatelessWidget {
                         hangout.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: OrbitColors.ink,
+                          color: context.cInk,
                         ),
                       ),
                     ),
@@ -84,7 +84,7 @@ class HangoutPin extends StatelessWidget {
 
           CustomPaint(
             size: const Size(16, 9),
-            painter: _PointerPainter(accent),
+            painter: _PointerPainter(accent, context.cSurface),
           ),
         ],
       ),
@@ -94,12 +94,13 @@ class HangoutPin extends StatelessWidget {
 
 class _PointerPainter extends CustomPainter {
   final Color color;
-  _PointerPainter(this.color);
+  final Color surface;
+  _PointerPainter(this.color, this.surface);
 
   @override
   void paint(Canvas canvas, Size size) {
     final fill = Paint()
-      ..color = OrbitColors.surface
+      ..color = surface
       ..style = PaintingStyle.fill;
     final stroke = Paint()
       ..color = color.withValues(alpha: 0.35)
@@ -122,5 +123,6 @@ class _PointerPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _PointerPainter old) => old.color != color;
+  bool shouldRepaint(covariant _PointerPainter old) =>
+      old.color != color || old.surface != surface;
 }

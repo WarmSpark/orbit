@@ -82,6 +82,41 @@ func (s *UserStore) GetUser(email string) (User, bool) {
 	return row.toUser(), true
 }
 
+func (s *UserStore) DeleteAccount(email string) ([]string, error) {
+	var roomIDs []string
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		var ids []string
+		if err := tx.Model(&eventRow{}).Where("creator_email = ?", email).
+			Pluck("id", &ids).Error; err != nil {
+			return err
+		}
+		roomIDs = ids
+
+		if len(ids) > 0 {
+			if err := tx.Delete(&eventRow{}, "id IN ?", ids).Error; err != nil {
+				return err
+			}
+			if err := tx.Delete(&requestRow{}, "event_id IN ?", ids).Error; err != nil {
+				return err
+			}
+			if err := tx.Delete(&messageRow{}, "room_id IN ?", ids).Error; err != nil {
+				return err
+			}
+		}
+		if err := tx.Delete(&requestRow{}, "applicant_email = ?", email).Error; err != nil {
+			return err
+		}
+		if err := tx.Delete(&messageRow{}, "sender_email = ?", email).Error; err != nil {
+			return err
+		}
+		return tx.Delete(&userRow{}, "email = ?", email).Error
+	})
+	if err != nil {
+		return nil, err
+	}
+	return roomIDs, nil
+}
+
 func (s *UserStore) UpdateProfile(email string, username string, name string, gender string, bio string, avatar string) error {
 	var row userRow
 	if err := DB.Where("email = ?", email).First(&row).Error; err != nil {

@@ -13,7 +13,7 @@ import 'package:orbit_app/theme.dart';
 void main() {
   testWidgets('Splash shows the Orbit brand', (WidgetTester tester) async {
     await tester.pumpWidget(
-      MaterialApp(theme: buildOrbitTheme(), home: const SplashScreen()),
+      MaterialApp(theme: buildOrbitTheme(Brightness.light), home: const SplashScreen()),
     );
 
     expect(find.text('Orbit'), findsOneWidget);

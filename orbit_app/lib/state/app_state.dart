@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,6 +20,8 @@ enum AuthStatus { unknown, unauthenticated, onboarding, authenticated }
 class AppState extends ChangeNotifier {
   static const _kToken = 'orbit_token';
   static const _kUser = 'orbit_user';
+  static const _kAgreedTerms = 'agreed_to_terms_v1';
+  static const _kThemeMode = 'orbit_theme_mode';
 
   final ApiClient api = ApiClient();
   late final AuthService auth = AuthService(api);
@@ -33,11 +35,13 @@ class AppState extends ChangeNotifier {
   AuthStatus status = AuthStatus.unknown;
   OrbitUser? user;
   LatLng? myLocation;
+  ThemeMode themeMode = ThemeMode.system;
 
   bool get isSignedIn => api.hasToken;
 
   Future<void> bootstrap() async {
     final prefs = await SharedPreferences.getInstance();
+    await _loadThemeMode(prefs);
     final token = prefs.getString(_kToken);
 
     if (token == null || token.isEmpty) {
@@ -92,19 +96,7 @@ class AppState extends ChangeNotifier {
     user = result.user;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_kToken, result.token);
-    await _persistUser();
-    _set(
-      (result.isNewUser || result.user.needsOnboarding)
-          ? AuthStatus.onboarding
-          : AuthStatus.authenticated,
-    );
-  }
-
-  Future<void> devSignIn(String email) async {
-    final result = await auth.devSignIn(email);
-    user = result.user;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kToken, result.token);
+    await prefs.setBool(_kAgreedTerms, true);
     await _persistUser();
     _set(
       (result.isNewUser || result.user.needsOnboarding)
@@ -153,6 +145,27 @@ class AppState extends ChangeNotifier {
     await prefs.remove(_kToken);
     await prefs.remove(_kUser);
     _set(AuthStatus.unauthenticated);
+  }
+
+  Future<void> deleteAccount() async {
+    await api.delete('/user', {'confirm': 'delete'});
+    await logout();
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    if (themeMode == mode) return;
+    themeMode = mode;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kThemeMode, mode.name);
+  }
+
+  Future<void> _loadThemeMode(SharedPreferences prefs) async {
+    final saved = prefs.getString(_kThemeMode);
+    themeMode = ThemeMode.values.firstWhere(
+      (m) => m.name == saved,
+      orElse: () => ThemeMode.system,
+    );
   }
 
   Future<void> _persistUser() async {

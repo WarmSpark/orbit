@@ -26,9 +26,9 @@ class CategoryChip extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
-          color: selected ? color : OrbitColors.surface,
+          color: selected ? color : context.cSurface,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: selected ? color : OrbitColors.line),
+          border: Border.all(color: selected ? color : context.cLine),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -47,7 +47,7 @@ class CategoryChip extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: selected ? Colors.white : OrbitColors.ink,
+                color: selected ? Colors.white : context.cInk,
               ),
             ),
           ],

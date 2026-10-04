@@ -26,7 +26,7 @@ const (
 	maxUserMsgWindow  = 20
 )
 
-const townhallRoomID = "townhall_ncr"
+const townhallRoomID = database.TownhallRoomID
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -321,7 +321,7 @@ func (c *Client) readPump() {
 		if len(msg.ReplyToID) > 64 {
 			msg.ReplyToID = ""
 		}
-		if msg.Message == "" {
+		if msg.Message == "" || containsBlockedContent(msg.Message) {
 			continue
 		}
 

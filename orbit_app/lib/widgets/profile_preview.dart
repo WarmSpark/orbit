@@ -33,8 +33,8 @@ class ProfilePreviewCard extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 28),
-        decoration: const BoxDecoration(
-          color: OrbitColors.surface,
+        decoration: BoxDecoration(
+          color: context.cSurface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: Column(
@@ -48,10 +48,10 @@ class ProfilePreviewCard extends StatelessWidget {
             Text(
               hasName ? name.trim() : (handle.isEmpty ? 'Someone' : handle),
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 21,
                 fontWeight: FontWeight.w800,
-                color: OrbitColors.ink,
+                color: context.cInk,
               ),
             ),
 
@@ -59,10 +59,10 @@ class ProfilePreviewCard extends StatelessWidget {
               const SizedBox(height: 3),
               Text(
                 handle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: OrbitColors.inkSoft,
+                  color: context.cInkSoft,
                 ),
               ),
             ],
@@ -74,9 +74,9 @@ class ProfilePreviewCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 subtitle!,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
-                  color: OrbitColors.inkSoft,
+                  color: context.cInkSoft,
                 ),
               ),
             ],
@@ -85,15 +85,15 @@ class ProfilePreviewCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: OrbitColors.bg,
+                color: context.cBg,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
                 bio.trim().isEmpty ? 'No bio yet.' : bio,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   height: 1.45,
-                  color: OrbitColors.ink,
+                  color: context.cInk,
                 ),
               ),
             ),
@@ -115,7 +115,7 @@ class _Grabber extends StatelessWidget {
     width: 40,
     height: 4,
     decoration: BoxDecoration(
-      color: OrbitColors.line,
+      color: context.cLine,
       borderRadius: BorderRadius.circular(2),
     ),
   );
@@ -170,9 +170,9 @@ class _GenderChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: OrbitColors.bg,
+        color: context.cBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: OrbitColors.line),
+        border: Border.all(color: context.cLine),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

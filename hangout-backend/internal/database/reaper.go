@@ -13,6 +13,7 @@ func StartReaper(eventStore *EventStore, requestStore *RequestStore, chatStore *
 				requestStore.CleanupEventRequests(expiredIDs)
 				chatStore.CleanupRooms(expiredIDs)
 			}
+			chatStore.CleanupMessagesOlderThan(TownhallRoomID, 24*time.Hour)
 		}
 	}()
 }

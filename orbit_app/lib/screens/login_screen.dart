@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,6 +6,7 @@ import '../config.dart';
 import '../services/api_client.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import 'legal_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +17,32 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _busy = false;
+  bool _agreed = false;
+
+  late final TapGestureRecognizer _termsRecognizer;
+  late final TapGestureRecognizer _privacyRecognizer;
+
+  @override
+  void initState() {
+    super.initState();
+    _termsRecognizer = TapGestureRecognizer()
+      ..onTap = () => _openLegal(orbitTermsDoc);
+    _privacyRecognizer = TapGestureRecognizer()
+      ..onTap = () => _openLegal(orbitPrivacyDoc);
+  }
+
+  @override
+  void dispose() {
+    _termsRecognizer.dispose();
+    _privacyRecognizer.dispose();
+    super.dispose();
+  }
+
+  void _openLegal(LegalDoc doc) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => LegalScreen(doc: doc)));
+  }
 
   Future<void> _signIn() async {
     setState(() => _busy = true);
@@ -24,68 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
       _showError(e.message);
     } catch (e) {
       _showError('Sign-in failed. Please try again.');
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  Future<void> _devSignIn() async {
-    final controller = TextEditingController(text: 'tester@orbit.dev');
-    final email = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Dev sign-in'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Enter any email to create or resume a test account. This skips '
-              'Google (the server must run with ORBIT_DEV_AUTH=1). Use '
-              'different emails to simulate different people.',
-              style: TextStyle(fontSize: 13),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: controller,
-              autofocus: true,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                hintText: 'you@example.com',
-              ),
-              onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('Sign in'),
-          ),
-        ],
-      ),
-    );
-
-    if (email == null || email.isEmpty || !mounted) return;
-    if (!email.contains('@')) {
-      _showError('Please enter a valid email.');
-      return;
-    }
-
-    setState(() => _busy = true);
-    try {
-      await context.read<AppState>().devSignIn(email);
-    } on ApiException catch (e) {
-      _showError(e.message);
-    } catch (e) {
-      _showError(
-        'Dev sign-in failed. Is the server running with ORBIT_DEV_AUTH=1?',
-      );
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -155,62 +121,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const Spacer(flex: 4),
-                _GoogleButton(busy: _busy, onTap: _busy ? null : _signIn),
-                if (Config.devAuthEnabled) ...[
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          color: Colors.white.withValues(alpha: 0.4),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(
-                          'or',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.85),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          color: Colors.white.withValues(alpha: 0.4),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: OutlinedButton.icon(
-                      onPressed: _busy ? null : _devSignIn,
-                      icon: const Icon(
-                        Icons.construction_rounded,
-                        color: Colors.white,
-                      ),
-                      label: const Text(
-                        'Dev sign-in',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: Colors.white.withValues(alpha: 0.8),
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                _ConsentRow(
+                  agreed: _agreed,
+                  busy: _busy,
+                  onChanged: (v) => setState(() => _agreed = v),
+                  termsRecognizer: _termsRecognizer,
+                  privacyRecognizer: _privacyRecognizer,
+                ),
                 const SizedBox(height: 16),
+                _GoogleButton(
+                  busy: _busy,
+                  onTap: (_busy || !_agreed) ? null : _signIn,
+                ),
+                const SizedBox(height: 12),
                 if (!Config.hasGoogleClientId && !Config.devAuthEnabled)
                   Text(
                     'Dev note: set ORBIT_GOOGLE_CLIENT_ID to enable sign-in.',
@@ -220,21 +143,91 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.white.withValues(alpha: 0.8),
                     ),
                   ),
-                const SizedBox(height: 12),
-                Text(
-                  'By continuing you agree to keep Orbit fun & kind.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withValues(alpha: 0.75),
-                  ),
-                ),
                 const Spacer(flex: 1),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ConsentRow extends StatelessWidget {
+  final bool agreed;
+  final bool busy;
+  final ValueChanged<bool> onChanged;
+  final TapGestureRecognizer termsRecognizer;
+  final TapGestureRecognizer privacyRecognizer;
+  const _ConsentRow({
+    required this.agreed,
+    required this.busy,
+    required this.onChanged,
+    required this.termsRecognizer,
+    required this.privacyRecognizer,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 24,
+          height: 24,
+          child: Checkbox(
+            value: agreed,
+            onChanged: busy ? null : (v) => onChanged(v ?? false),
+            side: const BorderSide(color: Colors.white, width: 2),
+            fillColor: WidgetStateProperty.resolveWith(
+              (states) => states.contains(WidgetState.selected)
+                  ? Colors.white
+                  : Colors.transparent,
+            ),
+            checkColor: OrbitColors.primary,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text.rich(
+              TextSpan(
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.45,
+                  color: Colors.white.withValues(alpha: 0.92),
+                ),
+                children: [
+                  const TextSpan(text: "I agree to Orbit's "),
+                  TextSpan(
+                    text: 'Terms of Use',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: termsRecognizer,
+                  ),
+                  const TextSpan(text: ' and '),
+                  TextSpan(
+                    text: 'Privacy Policy',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: privacyRecognizer,
+                  ),
+                  const TextSpan(text: '.'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -253,7 +246,7 @@ class _GoogleButton extends StatelessWidget {
         onPressed: onTap,
         style: FilledButton.styleFrom(
           backgroundColor: Colors.white,
-          foregroundColor: OrbitColors.ink,
+          foregroundColor: context.cInk,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

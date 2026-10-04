@@ -42,6 +42,7 @@ func main() {
 	chatHandler := api.NewChatHandler(chatHub, chatStore, eventStore, requestStore, userStore)
 	eventHandler := api.NewEventHandler(eventStore, requestStore, userStore, chatHub, chatStore)
 	requestHandler := api.NewRequestHandler(requestStore, eventStore, userStore)
+	authHandler.SetChatHub(chatHub)
 
 	database.StartReaper(eventStore, requestStore, chatStore, 5*time.Minute)
 
@@ -59,9 +60,11 @@ func main() {
 	mux.HandleFunc("GET /api/v1/townhall/ws", chatHandler.ServeTownhall)
 
 	mux.Handle("GET /api/v1/events", api.AuthMiddleWare(http.HandlerFunc(eventHandler.ListEvents)))
+	mux.Handle("GET /api/v1/event", api.AuthMiddleWare(http.HandlerFunc(eventHandler.GetEvent)))
 
 	mux.Handle("GET /api/v1/user/profile", api.AuthMiddleWare(http.HandlerFunc(authHandler.GetProfile)))
 	mux.Handle("PUT /api/v1/user/profile", api.AuthMiddleWare(http.HandlerFunc(authHandler.UpdateProfile)))
+	mux.Handle("DELETE /api/v1/user", api.AuthMiddleWare(http.HandlerFunc(authHandler.DeleteAccount)))
 	mux.Handle("GET /api/v1/users/check-username", api.AuthMiddleWare(http.HandlerFunc(authHandler.CheckUsernameAvailability)))
 
 	mux.Handle("POST /api/v1/events", api.AuthMiddleWare(http.HandlerFunc(eventHandler.CreateEvent)))

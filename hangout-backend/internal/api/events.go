@@ -6,6 +6,7 @@ import (
 	"hangout-backend/internal/database"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -89,6 +90,12 @@ func (h *EventHandler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !withinNCR(req.Latitude, req.Longitude) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(AuthResponse{Status: "error", Message: "Hangouts can only be created inside the NCR"})
+		return
+	}
+
 	if !withinCampus(req.Latitude, req.Longitude) {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(AuthResponse{Status: "error", Message: "Hangouts can only be created on campus"})
@@ -142,6 +149,44 @@ type EventView struct {
 	HostBio         string  `json:"host_bio"`
 }
 
+func (h *EventHandler) buildView(e database.Event, userEmail string) EventView {
+	approved := h.RequestStore.GetApprovedCount(e.ID)
+	hostUsername := ""
+	hostName := ""
+	hostGender := ""
+	hostBio := ""
+	hostAvatar := "default_white"
+	if host, ok := h.UserStore.GetUser(e.CreatorEmail); ok {
+		hostUsername = host.Username
+		hostName = host.Name
+		hostGender = host.Gender
+		hostBio = host.Bio
+		if host.Avatar != "" {
+			hostAvatar = host.Avatar
+		}
+	}
+	return EventView{
+		ID:       e.ID,
+		Title:    e.Title,
+		Category: e.Category,
+		Location: e.Location,
+
+		Latitude:        fuzzCoord(e.Latitude),
+		Longitude:       fuzzCoord(e.Longitude),
+		Time:            e.Time,
+		MaxParticipants: e.MaxParticipants,
+		ApprovedCount:   approved,
+		IsFull:          approved+1 >= e.MaxParticipants,
+		IsHost:          e.CreatorEmail == userEmail,
+		CreatedAt:       e.CreatedAt,
+		HostUsername:    hostUsername,
+		HostName:        hostName,
+		HostGender:      hostGender,
+		HostAvatar:      hostAvatar,
+		HostBio:         hostBio,
+	}
+}
+
 func (h *EventHandler) ListEvents(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userEmail := GetUserEmail(r.Context())
@@ -149,47 +194,29 @@ func (h *EventHandler) ListEvents(w http.ResponseWriter, r *http.Request) {
 
 	views := make([]EventView, 0, len(events))
 	for _, e := range events {
-		approved := h.RequestStore.GetApprovedCount(e.ID)
-
-		hostUsername := ""
-		hostName := ""
-		hostGender := ""
-		hostBio := ""
-		hostAvatar := "default_white"
-		if host, ok := h.UserStore.GetUser(e.CreatorEmail); ok {
-			hostUsername = host.Username
-			hostName = host.Name
-			hostGender = host.Gender
-			hostBio = host.Bio
-			if host.Avatar != "" {
-				hostAvatar = host.Avatar
-			}
-		}
-
-		views = append(views, EventView{
-			ID:       e.ID,
-			Title:    e.Title,
-			Category: e.Category,
-			Location: e.Location,
-
-			Latitude:        fuzzCoord(e.Latitude),
-			Longitude:       fuzzCoord(e.Longitude),
-			Time:            e.Time,
-			MaxParticipants: e.MaxParticipants,
-			ApprovedCount:   approved,
-			IsFull:          approved+1 >= e.MaxParticipants,
-			IsHost:          e.CreatorEmail == userEmail,
-			CreatedAt:       e.CreatedAt,
-			HostUsername:    hostUsername,
-			HostName:        hostName,
-			HostGender:      hostGender,
-			HostAvatar:      hostAvatar,
-			HostBio:         hostBio,
-		})
+		views = append(views, h.buildView(e, userEmail))
 	}
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(views)
+}
+
+func (h *EventHandler) GetEvent(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	eventID := strings.TrimSpace(r.URL.Query().Get("event_id"))
+	if eventID == "" || len(eventID) > 32 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(AuthResponse{Status: "error", Message: "event_id is required"})
+		return
+	}
+	event, exists := h.EventStore.GetEvent(eventID)
+	if !exists {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(AuthResponse{Status: "error", Message: "Hangout not found or expired"})
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(h.buildView(event, GetUserEmail(r.Context())))
 }
 
 func (h *EventHandler) CancelEvent(w http.ResponseWriter, r *http.Request) {

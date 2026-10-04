@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../services/api_client.dart';
@@ -173,6 +174,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               controller: _usernameCtrl,
               onChanged: _onUsernameChanged,
               textInputAction: TextInputAction.next,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+                LengthLimitingTextInputFormatter(20),
+              ],
               decoration: InputDecoration(
                 hintText: 'e.g. aditi_23',
                 prefixText: '@ ',
@@ -245,10 +250,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         decoration: BoxDecoration(
           color: selected
               ? OrbitColors.primary.withValues(alpha: 0.12)
-              : OrbitColors.surface,
+              : context.cSurface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected ? OrbitColors.primary : OrbitColors.line,
+            color: selected ? OrbitColors.primary : context.cLine,
             width: selected ? 2 : 1,
           ),
         ),
@@ -259,7 +264,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Icon(
                 icon,
                 size: 18,
-                color: selected ? OrbitColors.primary : OrbitColors.inkSoft,
+                color: selected ? OrbitColors.primary : context.cInkSoft,
               ),
               const SizedBox(width: 6),
             ],
@@ -267,7 +272,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               label,
               style: TextStyle(
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected ? OrbitColors.primary : OrbitColors.ink,
+                color: selected ? OrbitColors.primary : context.cInk,
               ),
             ),
           ],
@@ -305,7 +310,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       case _NameState.invalid:
         return OrbitColors.danger;
       default:
-        return OrbitColors.inkSoft;
+        return context.cInkSoft;
     }
   }
 }

@@ -27,9 +27,9 @@ class ChatScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
-            const Text(
+                  Text(
               'Hangout chat',
-              style: TextStyle(fontSize: 12, color: OrbitColors.inkSoft),
+              style: TextStyle(fontSize: 12, color: context.cInkSoft),
             ),
           ],
         ),

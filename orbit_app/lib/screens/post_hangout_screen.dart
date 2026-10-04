@@ -254,7 +254,7 @@ class _PostHangoutScreenState extends State<PostHangoutScreen> {
               '“${h.title}” is live. It\'s one hangout per person — cancel it '
               'from its pin or the members list before posting a new one.',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: OrbitColors.inkSoft, height: 1.4),
+              style: TextStyle(color: context.cInkSoft, height: 1.4),
             ),
             const SizedBox(height: 22),
             FilledButton(
@@ -325,9 +325,9 @@ class _PostHangoutScreenState extends State<PostHangoutScreen> {
         const SizedBox(height: 18),
         _label('Drop the pin'),
         const SizedBox(height: 6),
-        const Text(
+              Text(
           'Move the map to place your pin exactly.',
-          style: TextStyle(color: OrbitColors.inkSoft, fontSize: 13),
+          style: TextStyle(color: context.cInkSoft, fontSize: 13),
         ),
         const SizedBox(height: 10),
         _mapPicker(),
@@ -363,9 +363,9 @@ class _PostHangoutScreenState extends State<PostHangoutScreen> {
     return Container(
       margin: const EdgeInsets.only(top: 6),
       decoration: BoxDecoration(
-        color: OrbitColors.surface,
+        color: context.cSurface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: OrbitColors.line),
+        border: Border.all(color: context.cLine),
       ),
       child: Column(
         children: [
@@ -446,7 +446,7 @@ class _PostHangoutScreenState extends State<PostHangoutScreen> {
               right: 10,
               bottom: 10,
               child: Material(
-                color: OrbitColors.surface,
+                color: context.cSurface,
                 elevation: 2,
                 shape: const CircleBorder(),
                 child: InkWell(
@@ -476,9 +476,9 @@ class _PostHangoutScreenState extends State<PostHangoutScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          color: OrbitColors.surface,
+          color: context.cSurface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: OrbitColors.line),
+          border: Border.all(color: context.cLine),
         ),
         child: Row(
           children: [
@@ -489,11 +489,11 @@ class _PostHangoutScreenState extends State<PostHangoutScreen> {
                 _when == null ? 'Pick a date & time' : formatWhen(_when!),
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: _when == null ? OrbitColors.inkSoft : OrbitColors.ink,
+                  color: _when == null ? context.cInkSoft : context.cInk,
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: OrbitColors.inkSoft),
+                  Icon(Icons.chevron_right_rounded, color: context.cInkSoft),
           ],
         ),
       ),
@@ -504,9 +504,9 @@ class _PostHangoutScreenState extends State<PostHangoutScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: OrbitColors.surface,
+        color: context.cSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: OrbitColors.line),
+        border: Border.all(color: context.cLine),
       ),
       child: Row(
         children: [
@@ -523,8 +523,8 @@ class _PostHangoutScreenState extends State<PostHangoutScreen> {
                 ),
                 Text(
                   'You + up to ${_capacity - 1} others',
-                  style: const TextStyle(
-                    color: OrbitColors.inkSoft,
+                  style: TextStyle(
+                    color: context.cInkSoft,
                     fontSize: 13,
                   ),
                 ),
@@ -555,7 +555,7 @@ class _PostHangoutScreenState extends State<PostHangoutScreen> {
     return Material(
       color: enabled
           ? OrbitColors.primary.withValues(alpha: 0.12)
-          : OrbitColors.line,
+          : context.cLine,
       shape: const CircleBorder(),
       child: InkWell(
         customBorder: const CircleBorder(),
@@ -565,7 +565,7 @@ class _PostHangoutScreenState extends State<PostHangoutScreen> {
           child: Icon(
             icon,
             size: 22,
-            color: enabled ? OrbitColors.primary : OrbitColors.inkSoft,
+            color: enabled ? OrbitColors.primary : context.cInkSoft,
           ),
         ),
       ),

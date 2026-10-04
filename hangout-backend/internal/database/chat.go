@@ -16,7 +16,10 @@ type ChatMessage struct {
 	ReplyToText  string `json:"reply_to_text,omitempty"`
 }
 
-const maxMessagesPerRoom = 100
+const (
+	maxMessagesPerRoom = 100
+	TownhallRoomID     = "townhall_ncr"
+)
 
 type ChatStore struct{}
 
@@ -76,4 +79,9 @@ func (s *ChatStore) CleanupRooms(roomIDs []string) {
 		return
 	}
 	DB.Delete(&messageRow{}, "room_id IN ?", roomIDs)
+}
+
+func (s *ChatStore) CleanupMessagesOlderThan(roomID string, maxAge time.Duration) {
+	cutoff := time.Now().Add(-maxAge).UTC().Format(time.RFC3339)
+	DB.Delete(&messageRow{}, "room_id = ? AND time_stamp < ?", roomID, cutoff)
 }

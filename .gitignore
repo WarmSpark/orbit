@@ -22,6 +22,10 @@ secrets.*
 *credentials*.json
 service-account*.json
 
+# Local secrets backup bundle (keystore + creds, for private GDrive) — never commit
+app_secret/
+app_secret.zip
+
 # Internal review / audit docs (reveal attack surface & old secrets)
 BACKEND_MASTER_REVIEW.md
 SECURITY_FIXES.md

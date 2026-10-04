@@ -125,6 +125,20 @@ func normalizeCategory(c string) string {
 	return c
 }
 
+var allowedAvatars = map[string]bool{
+	"coral": true, "ocean": true, "forest": true, "grape": true,
+	"sun": true, "rose": true, "sky": true, "mint": true,
+	"default_white": true,
+}
+
+func sanitizeAvatar(a string) string {
+	a = strings.ToLower(strings.TrimSpace(a))
+	if allowedAvatars[a] {
+		return a
+	}
+	return "default_white"
+}
+
 func clampCapacity(n int) int {
 	if n < minCapacity {
 		return minCapacity

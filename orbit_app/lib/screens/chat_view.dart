@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../models/chat_message.dart';
@@ -264,14 +265,14 @@ class _MessageBubble extends StatelessWidget {
             maxWidth: MediaQuery.of(context).size.width * 0.76,
           ),
           decoration: BoxDecoration(
-            color: mine ? OrbitColors.primary : OrbitColors.surface,
+            color: mine ? OrbitColors.primary : context.cSurface,
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(18),
               topRight: const Radius.circular(18),
               bottomLeft: Radius.circular(mine ? 18 : 4),
               bottomRight: Radius.circular(mine ? 4 : 18),
             ),
-            border: mine ? null : Border.all(color: OrbitColors.line),
+            border: mine ? null : Border.all(color: context.cLine),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,7 +315,7 @@ class _MessageBubble extends StatelessWidget {
                       fontSize: 12,
                       color: mine
                           ? Colors.white.withValues(alpha: 0.9)
-                          : OrbitColors.inkSoft,
+                          : context.cInkSoft,
                     ),
                   ),
                 ),
@@ -323,7 +324,7 @@ class _MessageBubble extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   height: 1.3,
-                  color: mine ? Colors.white : OrbitColors.ink,
+                  color: mine ? Colors.white : context.cInk,
                 ),
               ),
               const SizedBox(height: 3),
@@ -333,7 +334,7 @@ class _MessageBubble extends StatelessWidget {
                   fontSize: 10.5,
                   color: mine
                       ? Colors.white.withValues(alpha: 0.75)
-                      : OrbitColors.inkSoft,
+                      : context.cInkSoft,
                 ),
               ),
             ],
@@ -372,12 +373,12 @@ class _SystemLine extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: OrbitColors.inkSoft.withValues(alpha: 0.12),
+          color: context.cInkSoft.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           text,
-          style: const TextStyle(fontSize: 12, color: OrbitColors.inkSoft),
+          style: TextStyle(fontSize: 12, color: context.cInkSoft),
         ),
       ),
     );
@@ -392,7 +393,7 @@ class _ReplyPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: OrbitColors.bg,
+      color: context.cBg,
       padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
       child: Row(
         children: [
@@ -414,9 +415,9 @@ class _ReplyPreview extends StatelessWidget {
                   message.message,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: OrbitColors.inkSoft,
+                    color: context.cInkSoft,
                   ),
                 ),
               ],
@@ -448,9 +449,9 @@ class _Composer extends StatelessWidget {
       top: false,
       child: Container(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-        decoration: const BoxDecoration(
-          color: OrbitColors.surface,
-          border: Border(top: BorderSide(color: OrbitColors.line)),
+        decoration: BoxDecoration(
+          color: context.cSurface,
+          border: Border(top: BorderSide(color: context.cLine)),
         ),
         child: Row(
           children: [
@@ -461,10 +462,11 @@ class _Composer extends StatelessWidget {
                 minLines: 1,
                 maxLines: 4,
                 textCapitalization: TextCapitalization.sentences,
+                inputFormatters: [LengthLimitingTextInputFormatter(2000)],
                 decoration: InputDecoration(
                   hintText: enabled ? 'Message…' : 'Connecting…',
                   filled: true,
-                  fillColor: OrbitColors.bg,
+                  fillColor: context.cBg,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 10,
@@ -515,15 +517,15 @@ class _ReconnectBar extends StatelessWidget {
       top: false,
       child: Container(
         padding: const EdgeInsets.all(12),
-        color: OrbitColors.surface,
+        color: context.cSurface,
         child: Row(
           children: [
-            const Icon(Icons.wifi_off_rounded, color: OrbitColors.inkSoft),
+                  Icon(Icons.wifi_off_rounded, color: context.cInkSoft),
             const SizedBox(width: 10),
-            const Expanded(
+                  Expanded(
               child: Text(
                 'Disconnected from chat.',
-                style: TextStyle(color: OrbitColors.inkSoft),
+                style: TextStyle(color: context.cInkSoft),
               ),
             ),
             FilledButton(
@@ -553,15 +555,15 @@ class _EmptyChat extends StatelessWidget {
             Icon(
               closed ? Icons.wifi_off_rounded : Icons.forum_outlined,
               size: 48,
-              color: OrbitColors.inkSoft,
+              color: context.cInkSoft,
             ),
             const SizedBox(height: 12),
             Text(
               closed ? 'Chat disconnected' : 'Say hi 👋',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: OrbitColors.ink,
+                color: context.cInk,
               ),
             ),
             const SizedBox(height: 6),
@@ -570,7 +572,7 @@ class _EmptyChat extends StatelessWidget {
                   ? 'Reconnect to keep chatting.'
                   : 'Be the first to start the conversation.',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: OrbitColors.inkSoft),
+              style: TextStyle(color: context.cInkSoft),
             ),
           ],
         ),

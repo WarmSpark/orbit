@@ -22,10 +22,27 @@
   :root{
     --primary:#5B6EF5; --primary-dark:#3F51D8; --violet:#7C5CFC;
     --ink:#1B1D28; --ink-soft:#5B607A; --line:#E9EBF3;
-    --bg:#F6F7FB; --surface:#FFFFFF;
+    --bg:#F6F7FB; --surface:#FFFFFF; --header-bg:rgba(246,247,251,.8);
     --canteen:#FF8A3D; --study:#2DA4FF; --gaming:#22C55E; --sports:#FF5A7A;
     --radius:20px; --shadow:0 20px 50px -20px rgba(63,81,216,.35);
+    color-scheme:light;
   }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#F1F2F7; --ink-soft:#9AA0B8; --line:#2A2E3A;
+      --bg:#0F1117; --surface:#191C24; --header-bg:rgba(15,17,23,.72);
+      --shadow:0 20px 50px -20px rgba(0,0,0,.6);
+      color-scheme:dark;
+    }
+    :root:not([data-theme="light"]) .blob{opacity:.2}
+  }
+  :root[data-theme="dark"]{
+    --ink:#F1F2F7; --ink-soft:#9AA0B8; --line:#2A2E3A;
+    --bg:#0F1117; --surface:#191C24; --header-bg:rgba(15,17,23,.72);
+    --shadow:0 20px 50px -20px rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+  :root[data-theme="dark"] .blob{opacity:.2}
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{
@@ -39,7 +56,7 @@
   .grad-text{background:linear-gradient(120deg,var(--primary),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent}
 
   /* NAV */
-  header{position:sticky; top:0; z-index:50; backdrop-filter:blur(12px); background:rgba(246,247,251,.8); border-bottom:1px solid var(--line)}
+  header{position:sticky; top:0; z-index:50; backdrop-filter:blur(12px); background:var(--header-bg); border-bottom:1px solid var(--line)}
   .nav{display:flex; align-items:center; justify-content:space-between; height:72px}
   .brand{display:flex; align-items:center; gap:12px; font-family:'Poppins'; font-weight:700; font-size:22px}
   .brand img{width:40px; height:40px; border-radius:12px; box-shadow:var(--shadow)}
@@ -52,6 +69,7 @@
   .btn-ghost{background:var(--surface); color:var(--ink); border:1px solid var(--line)}
   .btn-ghost:hover{border-color:#c9cffb}
   .nav .btn{padding:10px 20px; font-size:15px}
+  .theme-toggle{padding:10px 14px; font-size:16px; line-height:1}
   @media(max-width:760px){.nav-links{display:none}}
 
   /* HERO */
@@ -121,7 +139,7 @@
 
   /* STEPS */
   .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; counter-reset:step}
-  .step{position:relative; background:linear-gradient(180deg,#fff,#fbfbff); border:1px solid var(--line); border-radius:var(--radius); padding:32px 26px}
+  .step{position:relative; background:linear-gradient(180deg,var(--surface),var(--bg)); border:1px solid var(--line); border-radius:var(--radius); padding:32px 26px}
   .step::before{counter-increment:step; content:counter(step); font-family:'Poppins'; font-weight:800; font-size:22px;
     width:46px; height:46px; border-radius:14px; display:grid; place-items:center; color:#fff;
     background:linear-gradient(120deg,var(--primary),var(--violet)); margin-bottom:18px}
@@ -195,7 +213,10 @@
       <a href="#how">How it works</a>
       <a href="#privacy">Privacy</a>
     </nav>
-    <a class="btn btn-primary" href="#download">Get the app</a>
+    <div style="display:flex; align-items:center; gap:12px">
+      <button class="btn btn-ghost theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">🌙</button>
+      <a class="btn btn-primary" href="#download">Get the app</a>
+    </div>
   </div>
 </header>
 
@@ -292,7 +313,7 @@
   </section>
 
   <!-- HOW -->
-  <section id="how" style="background:linear-gradient(180deg,#fff,var(--bg))">
+  <section id="how" style="background:linear-gradient(180deg,var(--surface),var(--bg))">
     <div class="wrap">
       <div class="sec-head">
         <div class="kicker">How it works</div>
@@ -361,6 +382,36 @@
     <div>© 2026 Orbit</div>
   </div>
 </footer>
+
+<script>
+(function(){
+  var root=document.documentElement, key='orbit-theme',
+      btn=document.getElementById('themeToggle'),
+      meta=document.querySelector('meta[name="theme-color"]'),
+      mq=matchMedia('(prefers-color-scheme: dark)');
+  function apply(mode){
+    if(mode==='light'||mode==='dark') root.setAttribute('data-theme',mode);
+    else root.removeAttribute('data-theme');
+    var dark = mode==='dark' || (mode!=='light' && mq.matches);
+    if(btn) btn.textContent = dark ? '☀️' : '🌙';
+    if(meta) meta.setAttribute('content', dark ? '#0F1117' : '#5B6EF5');
+  }
+  var saved=null;
+  try{ saved=localStorage.getItem(key); }catch(e){}
+  apply(saved||'system');
+  if(btn) btn.addEventListener('click',function(){
+    var dark = root.getAttribute('data-theme')==='dark' ||
+      (!root.getAttribute('data-theme') && mq.matches);
+    var next = dark ? 'light' : 'dark';
+    try{ localStorage.setItem(key,next); }catch(e){}
+    apply(next);
+  });
+  mq.addEventListener('change',function(){
+    var s=null; try{ s=localStorage.getItem(key); }catch(e){}
+    if(!s) apply('system');
+  });
+})();
+</script>
 
 </body>
 </html>

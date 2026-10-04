@@ -72,26 +72,6 @@ class AuthService {
     );
   }
 
-  Future<AuthResult> devSignIn(String email) async {
-    final data =
-        await _api.post('/auth/dev', {'email': email.trim()})
-            as Map<String, dynamic>;
-
-    final token = (data['token'] ?? '') as String;
-    if (token.isEmpty) {
-      throw ApiException(500, 'Server did not return a session token.');
-    }
-    _api.setToken(token);
-
-    final userJson =
-        (data['user'] as Map?)?.cast<String, dynamic>() ?? <String, dynamic>{};
-    return AuthResult(
-      token: token,
-      user: OrbitUser.fromJson(userJson),
-      isNewUser: data['is_new_user'] == true,
-    );
-  }
-
   Future<void> signOut() async {
     try {
       await _google.signOut();

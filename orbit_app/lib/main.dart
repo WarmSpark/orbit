@@ -16,16 +16,11 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.dark,
-      systemNavigationBarDividerColor: Colors.transparent,
-    ),
-  );
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarDividerColor: Colors.transparent,
+  ));
   runApp(
     ChangeNotifierProvider(
       create: (_) => AppState()..bootstrap(),
@@ -39,11 +34,36 @@ class OrbitApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mode = context.watch<AppState>().themeMode;
     return MaterialApp(
       title: 'Orbit',
       debugShowCheckedModeBanner: false,
-      theme: buildOrbitTheme(),
-      home: const RootGate(),
+      theme: buildOrbitTheme(Brightness.light),
+      darkTheme: buildOrbitTheme(Brightness.dark),
+      themeMode: mode,
+      home: const _SystemOverlay(child: RootGate()),
+    );
+  }
+}
+
+class _SystemOverlay extends StatelessWidget {
+  final Widget child;
+  const _SystemOverlay({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
+        statusBarBrightness: dark ? Brightness.dark : Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness:
+            dark ? Brightness.light : Brightness.dark,
+        systemNavigationBarDividerColor: Colors.transparent,
+      ),
+      child: child,
     );
   }
 }

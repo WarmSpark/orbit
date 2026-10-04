@@ -276,7 +276,7 @@ class MapDashboardState extends State<MapDashboard> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: OrbitColors.surface,
+                  color: context.cSurface,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -285,7 +285,7 @@ class MapDashboardState extends State<MapDashboard> {
                     ),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
@@ -298,7 +298,7 @@ class MapDashboardState extends State<MapDashboard> {
                       'Loading hangouts…',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: OrbitColors.ink,
+                        color: context.cInk,
                       ),
                     ),
                   ],
@@ -346,7 +346,7 @@ class _SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: OrbitColors.surface,
+        color: context.cSurface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -402,7 +402,7 @@ class _SuggestionList extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 6),
       decoration: BoxDecoration(
-        color: OrbitColors.surface,
+        color: context.cSurface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -438,7 +438,7 @@ class _RoundButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: OrbitColors.surface,
+      color: context.cSurface,
       elevation: 3,
       shape: const CircleBorder(),
       child: InkWell(

@@ -19,6 +19,11 @@ class Config {
     defaultValue: '',
   );
 
+  static const String shareBase = String.fromEnvironment(
+    'ORBIT_SHARE_BASE',
+    defaultValue: 'https://orbit-ncr.online',
+  );
+
   static bool get hasGoogleClientId => googleServerClientId.isNotEmpty;
 
   static const bool devAuthEnabled = bool.fromEnvironment(

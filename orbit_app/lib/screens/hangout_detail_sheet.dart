@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../config.dart';
 import '../models/hangout.dart';
 import '../services/api_client.dart';
 import '../state/app_state.dart';
@@ -149,13 +151,20 @@ class _HangoutDetailSheetState extends State<HangoutDetailSheet> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
   }
 
+  Future<void> _share() async {
+    final link = '${Config.shareBase}/?h=${h.id}';
+    final text =
+        'Join my Orbit hangout 👋\n${h.title}\n📍 ${h.location}\n🕒 ${h.timeLabel}\n\n$link';
+    await SharePlus.instance.share(ShareParams(text: text, subject: h.title));
+  }
+
   @override
   Widget build(BuildContext context) {
     final cat = categoryFor(h.category);
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-      decoration: const BoxDecoration(
-        color: OrbitColors.surface,
+      decoration: BoxDecoration(
+        color: context.cSurface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
@@ -167,43 +176,53 @@ class _HangoutDetailSheetState extends State<HangoutDetailSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: OrbitColors.line,
+                color: context.cLine,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
           const SizedBox(height: 16),
 
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-            decoration: BoxDecoration(
-              color: cat.color.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(cat.icon, size: 16, color: cat.color),
-                const SizedBox(width: 6),
-                Text(
-                  h.category,
-                  style: TextStyle(
-                    color: cat.color,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                  ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                decoration: BoxDecoration(
+                  color: cat.color.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              ],
-            ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(cat.icon, size: 16, color: cat.color),
+                    const SizedBox(width: 6),
+                    Text(
+                      h.category,
+                      style: TextStyle(
+                        color: cat.color,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                tooltip: 'Share',
+                onPressed: _share,
+                icon: Icon(Icons.ios_share_rounded, color: context.cInkSoft),
+              ),
+            ],
           ),
           const SizedBox(height: 14),
 
           Text(
             h.title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w800,
-              color: OrbitColors.ink,
+              color: context.cInk,
               height: 1.15,
             ),
           ),
@@ -261,8 +280,8 @@ class _HangoutDetailSheetState extends State<HangoutDetailSheet> {
                           : 'Hosting',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: OrbitColors.inkSoft,
+                      style: TextStyle(
+                        color: context.cInkSoft,
                         fontSize: 12.5,
                       ),
                     ),
@@ -310,8 +329,8 @@ class _HangoutDetailSheetState extends State<HangoutDetailSheet> {
                 label: const Text('Manage'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(52),
-                  side: const BorderSide(color: OrbitColors.line),
-                  foregroundColor: OrbitColors.ink,
+                  side: BorderSide(color: context.cLine),
+                  foregroundColor: context.cInk,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -362,7 +381,7 @@ class _HangoutDetailSheetState extends State<HangoutDetailSheet> {
           icon: const Icon(Icons.hourglass_top_rounded),
           label: const Text('Requested — waiting for host'),
           style: FilledButton.styleFrom(
-            backgroundColor: OrbitColors.inkSoft.withValues(alpha: 0.25),
+            backgroundColor: context.cInkSoft.withValues(alpha: 0.25),
           ),
         );
       case _Membership.declined:
@@ -391,7 +410,7 @@ class _InfoRow extends StatelessWidget {
         Expanded(
           child: Text(
             text.isEmpty ? '—' : text,
-            style: const TextStyle(fontSize: 15, color: OrbitColors.ink),
+            style: TextStyle(fontSize: 15, color: context.cInk),
           ),
         ),
       ],

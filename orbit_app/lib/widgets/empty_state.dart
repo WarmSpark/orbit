@@ -38,20 +38,20 @@ class EmptyState extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: OrbitColors.ink,
+                color: context.cInk,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 height: 1.4,
-                color: OrbitColors.inkSoft,
+                color: context.cInkSoft,
               ),
             ),
             if (action != null) ...[const SizedBox(height: 20), action!],

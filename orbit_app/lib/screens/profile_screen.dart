@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../services/api_client.dart';
@@ -32,6 +33,65 @@ class ProfileScreen extends StatelessWidget {
     );
     if (ok == true && context.mounted) {
       await context.read<AppState>().logout();
+    }
+  }
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    final controller = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) {
+          final canDelete =
+              controller.text.trim().toLowerCase() == 'delete';
+          return AlertDialog(
+            title: const Text('Delete account?'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'This permanently deletes your profile, the hangouts you host and your messages. This cannot be undone.',
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: controller,
+                  autofocus: true,
+                  onChanged: (_) => setState(() {}),
+                  decoration: const InputDecoration(
+                    hintText: 'Type "delete" to confirm',
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: OrbitColors.danger,
+                ),
+                onPressed: canDelete ? () => Navigator.pop(ctx, true) : null,
+                child: const Text('Delete'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+    controller.dispose();
+    if (confirmed != true || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await context.read<AppState>().deleteAccount();
+    } on ApiException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Could not delete your account. Try again.')),
+      );
     }
   }
 
@@ -80,8 +140,8 @@ class ProfileScreen extends StatelessWidget {
                           ? FontWeight.w800
                           : FontWeight.w600,
                       color: user.name.trim().isEmpty
-                          ? OrbitColors.ink
-                          : OrbitColors.inkSoft,
+                          ? context.cInk
+                          : context.cInkSoft,
                     ),
                   ),
                 ),
@@ -94,7 +154,7 @@ class ProfileScreen extends StatelessWidget {
                   Center(
                     child: Text(
                       user.email,
-                      style: const TextStyle(color: OrbitColors.inkSoft),
+                      style: TextStyle(color: context.cInkSoft),
                     ),
                   ),
                 ],
@@ -108,8 +168,33 @@ class ProfileScreen extends StatelessWidget {
                     style: TextStyle(
                       height: 1.4,
                       color: user.bio.trim().isEmpty
-                          ? OrbitColors.inkSoft
-                          : OrbitColors.ink,
+                          ? context.cInkSoft
+                          : context.cInk,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _SectionCard(
+                  title: 'Appearance',
+                  child: Consumer<AppState>(
+                    builder: (_, app, _) => SegmentedButton<ThemeMode>(
+                      segments: const [
+                        ButtonSegment(
+                          value: ThemeMode.system,
+                          label: Text('System'),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.light,
+                          label: Text('Light'),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.dark,
+                          label: Text('Dark'),
+                        ),
+                      ],
+                      selected: {app.themeMode},
+                      showSelectedIcon: false,
+                      onSelectionChanged: (s) => app.setThemeMode(s.first),
                     ),
                   ),
                 ),
@@ -124,8 +209,8 @@ class ProfileScreen extends StatelessWidget {
                   label: const Text('Edit profile'),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
-                    side: const BorderSide(color: OrbitColors.line),
-                    foregroundColor: OrbitColors.ink,
+                    side: BorderSide(color: context.cLine),
+                    foregroundColor: context.cInk,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -145,11 +230,21 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(height: 8),
+                TextButton.icon(
+                  onPressed: () => _deleteAccount(context),
+                  icon: const Icon(Icons.delete_forever_rounded, size: 20),
+                  label: const Text('Delete account'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: OrbitColors.danger,
+                    minimumSize: const Size.fromHeight(48),
+                  ),
+                ),
                 const SizedBox(height: 24),
-                const Center(
+                      Center(
                   child: Text(
                     'Orbit · NCR beta',
-                    style: TextStyle(color: OrbitColors.inkSoft, fontSize: 12),
+                    style: TextStyle(color: context.cInkSoft, fontSize: 12),
                   ),
                 ),
               ],
@@ -183,9 +278,9 @@ class _GenderChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: OrbitColors.surface,
+        color: context.cSurface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: OrbitColors.line),
+        border: Border.all(color: context.cLine),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -213,20 +308,20 @@ class _SectionCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: OrbitColors.surface,
+        color: context.cSurface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: OrbitColors.line),
+        border: Border.all(color: context.cLine),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title.toUpperCase(),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.6,
-              color: OrbitColors.inkSoft,
+              color: context.cInkSoft,
             ),
           ),
           const SizedBox(height: 10),
@@ -435,6 +530,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               controller: _usernameCtrl,
               onChanged: _onUsernameChanged,
               textInputAction: TextInputAction.next,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+                LengthLimitingTextInputFormatter(20),
+              ],
               decoration: InputDecoration(
                 hintText: 'e.g. aditi_23',
                 prefixText: '@ ',
@@ -507,10 +606,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         decoration: BoxDecoration(
           color: selected
               ? OrbitColors.primary.withValues(alpha: 0.12)
-              : OrbitColors.surface,
+              : context.cSurface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected ? OrbitColors.primary : OrbitColors.line,
+            color: selected ? OrbitColors.primary : context.cLine,
             width: selected ? 2 : 1,
           ),
         ),
@@ -521,7 +620,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Icon(
                 icon,
                 size: 18,
-                color: selected ? OrbitColors.primary : OrbitColors.inkSoft,
+                color: selected ? OrbitColors.primary : context.cInkSoft,
               ),
               const SizedBox(width: 6),
             ],
@@ -529,7 +628,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               label,
               style: TextStyle(
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected ? OrbitColors.primary : OrbitColors.ink,
+                color: selected ? OrbitColors.primary : context.cInk,
               ),
             ),
           ],
@@ -567,7 +666,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       case _NameState.invalid:
         return OrbitColors.danger;
       default:
-        return OrbitColors.inkSoft;
+        return context.cInkSoft;
     }
   }
 }

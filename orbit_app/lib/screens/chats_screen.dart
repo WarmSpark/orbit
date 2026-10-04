@@ -187,12 +187,12 @@ class _ChatTile extends StatelessWidget {
           '${hangout.goingCount} going · disappears after 24h',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: OrbitColors.inkSoft, fontSize: 13),
+          style: TextStyle(color: context.cInkSoft, fontSize: 13),
         ),
       ),
-      trailing: const Icon(
+      trailing: Icon(
         Icons.chevron_right_rounded,
-        color: OrbitColors.inkSoft,
+        color: context.cInkSoft,
       ),
     );
   }

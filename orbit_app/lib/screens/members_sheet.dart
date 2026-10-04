@@ -155,8 +155,8 @@ class _MembersSheetState extends State<MembersSheet> {
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
-      decoration: const BoxDecoration(
-        color: OrbitColors.surface,
+      decoration: BoxDecoration(
+        color: context.cSurface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
@@ -167,7 +167,7 @@ class _MembersSheetState extends State<MembersSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: OrbitColors.line,
+              color: context.cLine,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -188,8 +188,8 @@ class _MembersSheetState extends State<MembersSheet> {
                 if (!_loading)
                   Text(
                     '${_members.length}',
-                    style: const TextStyle(
-                      color: OrbitColors.inkSoft,
+                    style: TextStyle(
+                      color: context.cInkSoft,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -208,7 +208,7 @@ class _MembersSheetState extends State<MembersSheet> {
                 children: [
                   Text(
                     _error!,
-                    style: const TextStyle(color: OrbitColors.inkSoft),
+                    style: TextStyle(color: context.cInkSoft),
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton(onPressed: _load, child: const Text('Retry')),

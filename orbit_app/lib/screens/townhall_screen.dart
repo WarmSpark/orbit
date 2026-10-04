@@ -18,13 +18,13 @@ class TownhallScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Town Hall'),
             Text(
               'NCR · everyone nearby',
-              style: TextStyle(fontSize: 12, color: OrbitColors.inkSoft),
+              style: TextStyle(fontSize: 12, color: context.cInkSoft),
             ),
           ],
         ),

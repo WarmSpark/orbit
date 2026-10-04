@@ -66,7 +66,7 @@ class _HomeShellState extends State<HomeShell> {
           if (i == 3) _chatsKey.currentState?.reload();
           setState(() => _index = i);
         },
-        backgroundColor: OrbitColors.surface,
+        backgroundColor: context.cSurface,
         indicatorColor: OrbitColors.primary.withValues(alpha: 0.14),
         destinations: const [
           NavigationDestination(
